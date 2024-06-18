@@ -1,10 +1,38 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Router, NavigationEnd } from '@angular/router';
+import { AnnouncementDialogComponent } from './components/dialogs/announcement-dialog/announcement-dialog.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  host: { ngSkipHydration: 'true' },
 })
-export class AppComponent {
-  title = 'Test';
+export class AppComponent implements OnInit, AfterViewInit {
+  title = 'FHNHospital';
+  currentRoute: string = '';
+  constructor(private router: Router, private dialog: MatDialog) {}
+
+  ngOnInit(): void {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // Extract the first segment of the route to check if it's 'main'
+        const urlSegment = event.urlAfterRedirects.split('/')[1];
+        this.currentRoute = urlSegment;
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.dialog.open(AnnouncementDialogComponent, {
+        width: '628px',
+        height: '380px',
+        position: {
+          top: `10%`,
+        },
+      });
+    }, 3000);
+  }
 }
